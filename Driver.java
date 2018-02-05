@@ -11,5 +11,6 @@
  * @author Jorge
  */
 public class Driver {
-    
+    LoadData ld = LoadData.getLoadDataInstance();
+    ld.loadFile("testfile1.txt");
 }

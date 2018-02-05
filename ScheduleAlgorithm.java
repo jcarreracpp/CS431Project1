@@ -12,9 +12,10 @@ import java.util.ArrayList;
  * @author Jorge
  */
 public interface ScheduleAlgorithm {
-    public String schedulerName = null;
     
-    public void runAlgorithm(ArrayList input);
+    public void initAlgorithm();
+    
+    public void mainLoop();
     
     public ArrayList getCalculatedData();
 }

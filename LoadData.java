@@ -53,6 +53,7 @@ public class LoadData {
         }
     }
     
+    //Deprecated.
     public ArrayList getData(){
         ArrayList temp = new ArrayList();
         temp.add(testfileName);
@@ -60,6 +61,22 @@ public class LoadData {
         temp.add(burst_time);
         temp.add(priority);
         return temp;
+    }
+    
+    public String getTestFileName(){
+        return testfileName;
+    }
+    
+    public ArrayList getPID(){
+        return pid;
+    }
+    
+    public ArrayList getBurst_Time(){
+        return burst_time;
+    }
+    
+    public ArrayList getPriority(){
+        return priority;
     }
     
     //Empties the arraylists.
