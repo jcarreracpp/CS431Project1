@@ -41,13 +41,13 @@ public class FCFS implements ScheduleAlgorithm{
     
     @Override
     public void mainLoop(){
-        int pcount = pid.size();
+        int pcount = ld.getPID().size();
         for(int i = 0; i < pcount; i++){
             pid.add(ld.getPID().get(i));
             startingBurstTime.add(ld.getBurst_Time().get(i));
             endingBurstTime.add(0);
             completionTime.add(((int)ld.getBurst_Time().get(i)+(int)cpuTime.get(i)));
-            cpuTime.add((int)cpuTime.get(i)+switchTime);
+            cpuTime.add((int)completionTime.get(i)+switchTime);
             if(pcount - i == 1){
                 cpuTime.remove(cpuTime.size()-1);
             }
@@ -56,6 +56,15 @@ public class FCFS implements ScheduleAlgorithm{
 
     @Override
     public ArrayList getCalculatedData() {
+        int pcount = pid.size();
+        System.out.println(outputName +" "+pcount);
+        for(int i = 0; i < pcount; i++){
+            System.out.print(cpuTime.get(i) + "\t");
+            System.out.print(pid.get(i) + "\t");
+            System.out.print(startingBurstTime.get(i) + "\t");
+            System.out.print(endingBurstTime.get(i) + "\t");
+            System.out.println(completionTime.get(i));
+        }
         return null;
     }
     

@@ -11,6 +11,11 @@
  * @author Jorge
  */
 public class Driver {
-    LoadData ld = LoadData.getLoadDataInstance();
-    ld.loadFile("testfile1.txt");
+    public static void main(String args[]){
+        LoadData ld = LoadData.getLoadDataInstance();
+        FCFS fcfs = new FCFS();
+        ld.loadFile("testdata1.txt");
+        fcfs.initAlgorithm();
+        fcfs.getCalculatedData();
+    }
 }
