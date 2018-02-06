@@ -14,8 +14,11 @@ public class Driver {
     public static void main(String args[]){
         LoadData ld = LoadData.getLoadDataInstance();
         FCFS fcfs = new FCFS();
+        SJF sjf = new SJF();
         ld.loadFile("testdata1.txt");
         fcfs.initAlgorithm();
         fcfs.getCalculatedData();
+        sjf.initAlgorithm();
+        sjf.getCalculatedData();
     }
 }

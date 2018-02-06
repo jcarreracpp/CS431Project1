@@ -11,8 +11,8 @@ import java.util.ArrayList;
  *
  * @author Jorge
  */
-public class FCFS implements ScheduleAlgorithm{
-    private String name = "FCFS-";
+public class SJF implements ScheduleAlgorithm{
+    private String name = "SJF-";
     private int switchTime = 3;
     private LoadData ld = LoadData.getLoadDataInstance();
     private ArrayList outputName;
@@ -21,8 +21,12 @@ public class FCFS implements ScheduleAlgorithm{
     private ArrayList startingBurstTime;
     private ArrayList endingBurstTime;
     private ArrayList completionTime;
-
-    public FCFS(){
+    private ArrayList externalPID;
+    private ArrayList externalBURST;
+    
+    public SJF(){
+        externalPID = new ArrayList();
+        externalBURST = new ArrayList();
         outputName = new ArrayList();
         cpuTime = new ArrayList();
         pid = new ArrayList();
@@ -36,17 +40,18 @@ public class FCFS implements ScheduleAlgorithm{
         emptyData();
         outputName.add(name.concat(ld.getTestFileName()));
         cpuTime.add(0);
+        sjfOrganize();
         mainLoop();
     }
-    
+
     @Override
-    public void mainLoop(){
-        int pcount = ld.getPID().size();
+    public void mainLoop() {
+        int pcount = externalPID.size();
         for(int i = 0; i < pcount; i++){
-            pid.add(ld.getPID().get(i));
-            startingBurstTime.add(ld.getBurst_Time().get(i));
+            pid.add(externalPID.get(i));
+            startingBurstTime.add(externalBURST.get(i));
             endingBurstTime.add(0);
-            completionTime.add(((int)ld.getBurst_Time().get(i)+(int)cpuTime.get(i)));
+            completionTime.add(((int)externalBURST.get(i)+(int)cpuTime.get(i)));
             cpuTime.add((int)completionTime.get(i)+switchTime);
             if(pcount - i == 1){
                 cpuTime.remove(cpuTime.size()-1);
@@ -76,5 +81,28 @@ public class FCFS implements ScheduleAlgorithm{
         startingBurstTime.clear();
         endingBurstTime.clear();
         completionTime.clear();
+    }
+    
+    private void sjfOrganize(){
+        int minpid = 0;
+        int minburst = 0;
+        externalPID = ld.getPID();
+        externalBURST = ld.getBurst_Time();
+        
+        for(int i = 0 ; i < externalPID.size()-1; i++){
+            int listid = i;
+            for(int j = i+1; j < externalPID.size(); j++){
+                if((int)externalBURST.get(j) < (int)externalBURST.get(listid)){
+                    listid = j;
+                }
+            }
+                minpid = (int) externalPID.get(listid);
+                minburst = (int) externalBURST.get(listid);
+                externalBURST.set(listid, (int)externalBURST.get(i));
+                externalPID.set(listid, (int)externalPID.get(i));
+                externalBURST.set(i, minburst);
+                externalPID.set(i, minpid);            
+        }
+        
     }
 }

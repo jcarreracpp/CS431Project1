@@ -18,4 +18,6 @@ public interface ScheduleAlgorithm {
     public void mainLoop();
     
     public ArrayList getCalculatedData();
+    
+    public void emptyData();
 }
