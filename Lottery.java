@@ -11,11 +11,12 @@ import java.util.ArrayList;
  *
  * @author Jorge
  */
-public class RoundRobin implements ScheduleAlgorithm{
+public class Lottery implements ScheduleAlgorithm{
     private String name;
-    private int timeQuantum = 0;
+    private int timeQuantum = 50;
     private int switchTime = 3;
     private int previousPID = -1;
+    private int priorityRange;
     private LoadData ld = LoadData.getLoadDataInstance();
     private ArrayList outputName;
     private ArrayList cpuTime;
@@ -25,8 +26,9 @@ public class RoundRobin implements ScheduleAlgorithm{
     private ArrayList completionTime;
     private ArrayList externalPID;
     private ArrayList externalBURST;
+    private ArrayList externalPRIORITY;
     
-    public RoundRobin(){
+    public Lottery(){
         outputName = new ArrayList();
         cpuTime = new ArrayList();
         pid = new ArrayList();
@@ -35,17 +37,13 @@ public class RoundRobin implements ScheduleAlgorithm{
         completionTime = new ArrayList();
         externalPID = new ArrayList();
         externalBURST = new ArrayList();
-    }
-    
-    public void roundRobininit(int timeQuantum){
-        this.timeQuantum = timeQuantum;
-        initAlgorithm();
+        externalPRIORITY = new ArrayList();
     }
     
     @Override
     public void initAlgorithm() {
         emptyData();
-        name = "RR";
+        name = "Lottery";
         name = name.concat(String.valueOf(timeQuantum));
         name = name.concat("-");
         outputName.add(name.concat(ld.getTestFileName()));
@@ -56,25 +54,28 @@ public class RoundRobin implements ScheduleAlgorithm{
     @Override
     public void mainLoop() {
         boolean looped = false;
-        int killcounter = 0;
+        boolean tapped;
+        int priorityRoll;
         externalPID = (ArrayList)ld.getPID().clone();
         externalBURST = (ArrayList)ld.getBurst_Time().clone();
+        externalPRIORITY = (ArrayList)ld.getPriority().clone();
         
         while(!looped){
-            killcounter = 0;
-            for(int i = 0; i < externalPID.size(); i ++){
-                if((int)externalPID.get(i) == -1){
-                    killcounter++;
-                }else{
+            tapped = false;
+            calcPriRange();
+            priorityRoll = (int) (Math.random() * priorityRange);
+            for(int i = 0; i < externalPID.size(); i++){
+                priorityRoll -= (int)externalPRIORITY.get(i);
+                if(priorityRoll <= 0 && !tapped){
                     jobScanner((int)cpuTime.get(cpuTime.size()-1), (int)externalPID.get(i), (int)externalBURST.get(i));
                     modLists(i);
-                }
-                if(killcounter == externalPID.size()){
-                    looped = true;
+                    tapped = true;
+                    i = externalPID.size();
                 }
             }
+            if(externalPID.isEmpty())
+                looped = true;
         }
-        cpuTime.remove(cpuTime.size()-1);
     }
     
     private void jobScanner(int cpuTime, int pid, int burst){
@@ -93,6 +94,7 @@ public class RoundRobin implements ScheduleAlgorithm{
         }
 
     }
+    
     private void modLists(int index){
         if(previousPID != (int)externalPID.get(index)){
             cpuTime.set(cpuTime.size()-1, (int)cpuTime.get(cpuTime.size()-1)+switchTime);
@@ -102,11 +104,21 @@ public class RoundRobin implements ScheduleAlgorithm{
             if((int)externalBURST.get(index) > timeQuantum){
                 externalBURST.set(index, ((int)externalBURST.get(index)-timeQuantum));
             }else{
-                externalPID.set(index, -1);
+                externalPID.remove(index);
+                externalBURST.remove(index);
+                externalPRIORITY.remove(index);
             }
         }
     }
-
+    
+    private void calcPriRange(){
+        int temp = 0;
+        for(int j = 0; j < externalPRIORITY.size(); j++){
+            temp += (int)externalPRIORITY.get(j);
+        }
+        priorityRange = temp;
+    }
+    
     @Override
     public ArrayList getCalculatedData() {
         int pcount = pid.size();

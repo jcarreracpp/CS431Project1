@@ -81,13 +81,15 @@ public class SJF implements ScheduleAlgorithm{
         startingBurstTime.clear();
         endingBurstTime.clear();
         completionTime.clear();
+        externalBURST.clear();
+        externalPID.clear();
     }
     
     private void sjfOrganize(){
         int minpid = 0;
         int minburst = 0;
-        externalPID = ld.getPID();
-        externalBURST = ld.getBurst_Time();
+        externalPID = (ArrayList)ld.getPID().clone();
+        externalBURST = (ArrayList)ld.getBurst_Time().clone();
         
         for(int i = 0 ; i < externalPID.size()-1; i++){
             int listid = i;
