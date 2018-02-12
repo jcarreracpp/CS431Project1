@@ -8,7 +8,8 @@ import java.util.ArrayList;
  */
 
 /**
- *
+ * Lottery scheduler algorithm set to a time quantum of 50.
+ * 
  * @author Jorge
  */
 public class Lottery implements ScheduleAlgorithm{
@@ -47,6 +48,7 @@ public class Lottery implements ScheduleAlgorithm{
         name = name.concat(String.valueOf(timeQuantum));
         name = name.concat("-");
         outputName.add(name.concat(ld.getTestFileName()));
+        name = name.concat(ld.getTestFileName());
         cpuTime.add(0);
         mainLoop();
     }
@@ -76,6 +78,7 @@ public class Lottery implements ScheduleAlgorithm{
             if(externalPID.isEmpty())
                 looped = true;
         }
+        cpuTime.remove(cpuTime.size()-1);
     }
     
     private void jobScanner(int cpuTime, int pid, int burst){
@@ -89,7 +92,7 @@ public class Lottery implements ScheduleAlgorithm{
             this.cpuTime.add(cpuTime + burst);
         }else{
             endingBurstTime.add(burst-timeQuantum);
-            completionTime.add(-1);
+            completionTime.add(0);
             this.cpuTime.add(cpuTime + timeQuantum);
         }
 
@@ -121,20 +124,21 @@ public class Lottery implements ScheduleAlgorithm{
     
     @Override
     public ArrayList getCalculatedData() {
-        int pcount = pid.size();
-        System.out.println(outputName +" "+pcount);
-        for(int i = 0; i < pcount; i++){
-            System.out.print(cpuTime.get(i) + "\t");
-            System.out.print(pid.get(i) + "\t");
-            System.out.print(startingBurstTime.get(i) + "\t");
-            System.out.print(endingBurstTime.get(i) + "\t");
-            System.out.println(completionTime.get(i));
-        }
-        return null;
+        System.out.println(name + " Avg Turn-around: \t"
+                +(int)completionTime.get(completionTime.size()-1)/ld.getPID().size());
+        ArrayList send = new ArrayList();
+        send.add(name);
+        send.add(cpuTime);
+        send.add(pid);
+        send.add(startingBurstTime);
+        send.add(endingBurstTime);
+        send.add(completionTime);
+        return send;
     }
 
     @Override
     public void emptyData() {
+        name = null;
         outputName.clear();
         cpuTime.clear();
         pid.clear();

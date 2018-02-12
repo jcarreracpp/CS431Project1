@@ -1,3 +1,6 @@
+
+import java.io.IOException;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -11,22 +14,31 @@
  * @author Jorge
  */
 public class Driver {
-    public static void main(String args[]){
-        LoadData ld = LoadData.getLoadDataInstance();
-        FCFS fcfs = new FCFS();
-        SJF sjf = new SJF();
-        RoundRobin rr = new RoundRobin();
-        Lottery lotto = new Lottery();
-        ld.loadFile("testdata1.txt");
+        static LoadData ld = LoadData.getLoadDataInstance();
+        static FCFS fcfs = new FCFS();
+        static SJF sjf = new SJF();
+        static RoundRobin rr = new RoundRobin();
+        static Lottery lotto = new Lottery();
+        static RenderData rd = new RenderData();
+        
+    public static void main(String args[]) throws IOException{
+        algosuite("testdata1.txt");
+        algosuite("testdata2.txt");
+        algosuite("testdata3.txt");
+        algosuite("testdata4.txt");
+    }
+    
+    public static void algosuite(String string) throws IOException{
+        ld.loadFile(string);
         fcfs.initAlgorithm();
-        fcfs.getCalculatedData();
+        rd.render(fcfs.getCalculatedData());
         sjf.initAlgorithm();
-        sjf.getCalculatedData();
+        rd.render(sjf.getCalculatedData());
         rr.roundRobininit(25);
-        rr.getCalculatedData();
+        rd.render(rr.getCalculatedData());
         rr.roundRobininit(50);
-        rr.getCalculatedData(); 
+        rd.render(rr.getCalculatedData()); 
         lotto.initAlgorithm();
-        lotto.getCalculatedData();
+        rd.render(lotto.getCalculatedData());
     }
 }
